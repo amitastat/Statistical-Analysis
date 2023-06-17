@@ -43,11 +43,21 @@ scatterplot(wt ~ mpg, data = mtcars,
             smooth=FALSE)
 
 
-#3D scatter plot using iris data set.
-head(iris)
+#3D scatter plot 
 
 #Install scatterplot3d package:
 install.packages("scatterplot3d")
+
+# Plot
+library(scatterplot3d)
+grps <- as.factor(mtcars$gear)
+colors <- c("#999999", "#E69F00", "#56B4E9")
+scatterplot3d(mtcars$mpg, mtcars$wt, mtcars$hp, pch = 16, color = colors[grps],
+              grid = TRUE, box = FALSE, xlab = "Mileage", 
+              ylab = "Weight", zlab = "Gross horsepower")
+
+#3D scatter plot using iris data set.
+head(iris)
 
 # Prepare the data set
 x <- iris$Sepal.Length
