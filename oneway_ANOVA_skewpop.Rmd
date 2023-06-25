@@ -1,0 +1,49 @@
+---
+title: "One-way ANOVA for skewed population"
+author: "Dr. Amita Baranwal"
+date: "`r Sys.Date()`"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+library(pandoc)
+library(dplyr)
+library(readxl)
+# importing excel file from local folder
+data=read_excel("D:/LPU/Chapter/SKEWED_POPULATIONS.xlsx")
+```
+
+
+First, we will try to identify one factor. For that
+
+It can be observed that the there are 6000 observations in the dataset and
+2 variables (columns), given as Population and Values. The test written
+next to \$Population "<chr>" tells <fctr>. It means that the vector "Population" is a factor.
+
+```{r data}
+glimpse(data)
+```
+
+```{r}
+data$Population
+```
+
+Before fitting the model, we will visualize the data.
+
+```{r pressure, echo=TRUE}
+library(ggplot2)
+ggplot(data, aes(x = Population, y = Values)) + 
+  geom_boxplot()
+```
+
+Analyzing the plot
+
+After analyzing the plot, we are able to have idea about what it means biologically e.g. which Plan seems to have had the biggest effect? Do all of the Plan relative to the control?
+
+Fitting the ANOVA model:
+
+```{r}
+Pop_model <- lm(Values ~ Population, data)
+anova(Pop_model)
+```
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.

@@ -1,0 +1,35 @@
+---
+title: "Untitled"
+author: "Dr. Amita Baranwal"
+date: "`r Sys.Date()`"
+output:
+  word_document: default
+  html_document:
+    df_print: paged
+---
+
+```{r setup, include=TRUE}
+library(GGally)
+library(plotly)
+library(webshot)
+data=data(mtcars)
+# Plot the matrices between
+# 4 variables giving 12 plots.
+
+# One variable with 3 others
+# and total 4 variables.
+pairs(~wt + mpg + disp + cyl, data = mtcars,
+      main = "Scatterplot Matrix")
+
+```
+
+Scatterplot matrix with ggplot2
+
+```{r }
+data(flea)
+head(flea)
+correlelogram=ggpairs(flea,columns=2:4,ggplot2::aes(color=species))
+correlelogram
+#ggplotly(correlelogram)
+```
+

@@ -1,0 +1,108 @@
+---
+title: "Two-way ANOVA"
+author: "Dr. Amita Baranwal"
+date: "`r Sys.Date()`"
+output: word_document
+---
+Walk through 
+Consider an example to know the effect of two different drugs on
+males and females. To start with this example, you have will need to download the DIET_EFFECT.CSV file from github and place it in your working directory.
+
+Install the readxl package to import using excel file.
+install.packages("readxl")
+
+install.packages("ggplot2") to get nice plots
+
+If .txt tab file, use
+
+my_data=read.delim(file.choose())
+
+Or, if .csv file, use
+
+my_data=read.csv(file.choose())
+
+```{r setup, include=TRUE}
+library(pandoc)
+library(dplyr)
+library(readxl)
+library(ggplot2)
+
+# importing excel file from local folder
+data=read_excel("D:/LPU/Chapter/GLYCOLIPID.xlsx")
+glimpse(data)
+```
+
+First, we will identify two factors. For that we will use glimpse() command.
+
+It can be observed that the there are 16 observations in the dataset and
+4 variables (columns), given as Patient number, Sex, Drug and and Glycolipid. The text written next to $Sex and $Drug "<chr>" tells <fctr>. It means that the vector "Sex" and "Drug" are factors. We can plot the data, according to the factors as follows.
+
+```{r }
+ggplot(data, aes(x = Sex, y = Glycolipid, colour = Drug)) + 
+  geom_boxplot()
+```
+
+The main purpose of this plot is to understand effect of drug A and B on both sex. It is observed from the Figure that drug B tends to decrease the level of glycolipid. It is interesting to see that there is no interaction effect of drug on sex.
+
+Fitting the ANOVA model:
+
+```{r pressure, echo=FALSE}
+glyco_model <- lm(Glycolipid ~ Drug + Sex + Drug : Sex, data)
+glyco_model
+```
+
+Two diagnostic plots are used
+
+1. to check normality assumption: a normal probability plot,
+
+```{r }
+plot(glyco_model, which = 2, add.smooth = FALSE)
+```
+
+As the points are closer to normality line, we can assume normality.
+
+2. a scale-location plot to evaluate the constant variance assumption 
+
+
+```{r }
+plot(glyco_model, which = 3, add.smooth = FALSE)
+```
+
+As the variability is not changing with the fitted values, no such pattern is visible to show heterogeneity in data and therefore constant variance assumption is satisfied here.
+
+Interpretation
+
+```{r }
+anova(glyco_model)
+```
+
+Now, we will see the interaction effect graphically.
+  calculate means for each treatment combination
+```{r }
+glyco_means=
+  data %>% 
+  group_by(Drug, Sex) %>% # <- remember to group by *both* factors
+  summarise(Means = mean(Glycolipid))
+glyco_means
+```
+
+
+```{r }
+ggplot(glyco_means, 
+       aes(x = Drug, y = Means, colour = Sex, group = Sex)) +
+  geom_point(size = 4) + geom_line()
+```
+
+In this example, there are two levels given for the main treatments. Therefore, multiple comparison tests are not required for the main effects. However, the interaction effect is significant, so it may be desirable to know which particular treatment combinations differ. For this, multiple comparison test is performed. 
+
+```{r }
+glyco_aov <- aov(glyco_model)      #convert the model object from lm to aov
+```
+
+
+```{r }
+TukeyHSD(glyco_aov, which = 'Drug:Sex')
+```
+
+This table presents a pair-wise comparisons between mean values tested by the Tukey procedure. 
+

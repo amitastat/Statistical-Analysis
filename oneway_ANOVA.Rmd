@@ -1,0 +1,85 @@
+---
+title: "One-way ANOVA"
+author: "Dr. Amita Baranwal"
+date: "`r Sys.Date()`"
+output:
+  word_document: default
+  pdf_document: default
+editor_options: 
+  markdown: 
+    wrap: 72
+---
+
+Walk through Consider an example to know the effect of different diet on
+weight loss from this point. You will need to download the
+DIET_EFFECT.CSV file from github and place it in your working directory.
+
+Install the readxl package to import using excel file.
+install.packages("readxl")
+
+install.packages("ggplot2") to enhance plots
+
+If .txt tab file, use
+
+my_data=read.delim(file.choose())
+
+Or, if .csv file, use
+
+my_data=read.csv(file.choose())
+
+```{r setup, include=TRUE}
+library(pandoc)
+library(dplyr)
+library(readxl)
+
+
+# importing excel file from local folder
+data=read_excel("D:/LPU/Chapter/DIET_EFFECTS.xlsx")
+glimpse(data)
+```
+
+First, we will try to identify one factor. For that
+
+It can be observed that the there are 40 observations in the dataset and
+2 variables (columns), given as Plan and WeightLoss. The text written
+next to \$Plan "<chr>" tells <fctr>. It means that the vector "Plan" is a factor.
+
+```{r}
+data$Plan
+```
+Before fitting the model, we will visualize the data.
+
+```{r pressure, echo=TRUE}
+library(ggplot2)
+ggplot(data, aes(x = Plan, y = WeightLoss)) + 
+  geom_boxplot()
+```
+
+
+Analyzing the plot
+
+After analyzing the plot, we are able to have idea about what it means biologically e.g. which Plan seems to have had the biggest effect? Do all of the Plan relative to the control?
+
+Fitting the ANOVA model:
+
+```{r}
+DietEffects_model <- lm(WeightLoss ~ Plan, data)
+anova(DietEffects_model)
+# 1. Homogeneity of variances
+plot(DietEffects_model, 1)
+```
+
+In the above code, there are two arguments.
+The first argument is a formula to model the data. It includes a ‘tilde’ symbol: ~. The variable name on the left of the ~ must be the numeric response variable whose means we want to compare among groups. The variable on the right should be the indicator (or predictor) variable that says which group each observation belongs to. These are WeightLoss and Plan, respectively.
+
+The second argument is the name of the data frame that contains the two variables listed in the formula.
+
+Now, we will check the homogeneity of variance assumption
+Here, the residuals against fits plot is used to check the homogeneity of variances.
+```{r}
+plot(DietEffects_model, 1)
+plot(DietEffects_model,2)
+```
+
+As the points are closer to normality line, we can assume normality.
+

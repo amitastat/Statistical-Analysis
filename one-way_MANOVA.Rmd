@@ -1,0 +1,75 @@
+---
+title: "One-way MANOVA"
+author: "Dr. Amita Baranwal"
+date: "`r Sys.Date()`"
+output: word_document
+---
+
+Install the readxl package to import using excel file.
+install.packages("readxl")
+install.packages("car") to get MANOVA function
+install.packages("ggplot2") to get nicer plots
+
+R program to illustrate MANOVA test
+
+Import required library
+
+```{r setup, include=TRUE}
+library(pandoc)
+library(conflicted)
+library(tidyverse)
+library(carData)
+library(car)
+library(broom)
+library(dplyr)
+library(readxl)
+library(ggplot2)
+
+# importing excel file from local folder
+data=read_excel("D:/LPU/Chapter/manova_data_plant_growth.xlsx")
+glimpse(data)
+```
+
+
+```{r }
+mydata=data.frame(
+Growth=c(data$Height,data$Width,data$Weight),
+Parameters=rep(c("Height","Width","Weight"),each=15),
+Treatment=rep(data$Treatment,3),
+stringsAsFactors = FALSE
+)
+glimpse(mydata)
+```
+
+Taking two dependent variable
+
+```{r}
+ggplot(mydata, aes(y=Growth, x=Parameters, fill=factor(Treatment))) +
+  geom_boxplot()+
+# theme( legend.position = "none" )+
+  facet_wrap(~Parameters,scales="free")
+```
+
+```{r pressure, echo=FALSE}
+mod <- lm(cbind(Height, Weight, Width) ~ Treatment, data)
+
+Manova(mod, test.statistic = "Pillai")
+```
+
+MANOVA test
+
+```{r }
+summary(Manova(mod))
+```
+
+It can be observed from the Table that the two variables are highly significantly different among Species.
+
+
+```{r }
+summary(Manova(mod))
+```
+
+```{r }
+tidy(mod)
+```
+The treatment experiment evaluates the effect of different treatments on height, width and weight of plant simultaneously in two three treatment groups, with one independent replicates within each group.This data is analyzed by a multiple linear model using MANOVA as an omnibus test (Pillai test statistic = 0.900218 with 1 df, F(4,5)=11.943, p=0.009). Posthoc analysis usig t-tests indicates PccAS the reductions in clearance relative to naive for tolbutamide (-0.006 clearance units) and buproprion (-0.654 clearance units) are statistically different than zero (Bonferroni adjusted p-values are 0.0199 and 0.0009, respectively).

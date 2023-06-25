@@ -1,0 +1,28 @@
+---
+title: "Untitled"
+author: "Dr. Amita Baranwal"
+date: "`r Sys.Date()`"
+output: word_document
+---
+Get the input values.
+
+```{r setup, include=TRUE}
+library(ggplot2)
+X=3:10
+Y=c(2.3,2.7,3.1,3.6,3.8,4,4.3,4.5)
+plot(X,Y)
+```
+
+using the parameter xlab and ylab in the syntax to describe the X-axis and Y-axis respectively
+
+```{r }
+plot(X,Y,main="Age versus Height",xlab="Age",ylab="Height")
+```
+
+
+```{r}
+data=data.frame(Age=X,Height=Y)
+data
+ggplot(data,aes(Age,Height))+
+  geom_point()
+```

@@ -1,0 +1,78 @@
+---
+title: "two-way MANOVA"
+author: "Dr. Amita Baranwal"
+date: "`r Sys.Date()`"
+output: word_document
+---
+
+Install the readxl package to import using excel file.
+install.packages("readxl")
+install.packages("car") to get MANOVA function
+install.packages("ggplot2") to get nicer plots
+
+R program to illustrate MANOVA test
+
+Import required library
+
+```{r setup, include=TRUE}
+library(pandoc)
+library(conflicted)
+library(tidyverse)
+library(carData)
+library(tibble)
+library(ggpubr)
+library(car)
+library(broom)
+library(dplyr)
+library(readxl)
+library(ggplot2)
+library(rstatix)
+library(mvtnorm)
+library(tidyr)
+
+
+# importing excel file from local folder
+data=read_excel("D:/LPU/Chapter/rice.xlsx")
+glimpse(data)
+```
+
+
+```{r }
+# Make variables factors 
+block=factor(data$block)
+variety=factor(data$variety)
+
+glimpse(data)
+```
+
+here, in this example, there are two dependent or response variable (height, tillers) and two independent variables or factors (block, variety).
+
+Null hypothesis
+1. Joint mean of the response variables (height, tillers) are not significantly different among the categories of the grouping variables.
+
+2. Joint mean of the response variables (height, tillers) are not significantly different for combinations of the block*variety interaction.
+
+To create a model
+
+```{r pressure, echo=FALSE}
+mod <- lm(cbind(height, tillers) ~ block+variety+block*variety-1, data)
+```
+
+Note: to remove the intercept effect, we used -1 in the lm() function.
+
+```{r }
+summary(mod)
+```
+
+It can be observed from the summary Tables that there is no significant interaction effect between two independent variables. 
+
+To run the MANOVA
+
+```{r }
+Manova(mod,multivariate=T,type=c("II"),test=("Wilks"))
+```
+
+```{r }
+Manova(mod,multivariate=T,type=c("III"),test=("Wilks")) 
+```
+It can be observed from the MANOVA table that the variety is highly significant. It means at least two varieties differ significantly in mean for height    and/or number of tillers. 
